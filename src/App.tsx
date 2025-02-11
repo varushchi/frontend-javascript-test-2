@@ -8,11 +8,13 @@ import APIRes from './types/types';
 function App() {
 
   const [inputValue, setInputValue] = useState('')
-  const [repos, setRepos] = useState<APIRes[]>([]);
+  const [repos, setRepos] = useState<APIRes[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     
     async function getRepos() {
+      setLoading(true)
       try{
         const octokit = new Octokit({
           auth: import.meta.env.GITHUB_TOKEN
@@ -32,6 +34,9 @@ function App() {
       catch(error){
         console.error(error)
       }
+      finally{
+        setLoading(false)
+      }
     }
 
     getRepos()
@@ -43,12 +48,13 @@ function App() {
   console.log(repos)
 
   return (
-    <div>
-      <form className='w-fit mx-auto'>
+    <div className='w-4/5 mx-auto mt-[30px]'>
+      <form className='w-full mb-[30px] mx-auto'>
         <input className='mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200' placeholder='search by username' value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
       </form>
-      <div>
-        {repos.map(elem => {
+      <div className='flex flex-col gap-[15px]'>
+        {loading && <p className='w-fit mx-auto'>loading...</p>}
+        {!loading && repos.map(elem => {
           return(
             <Card
               id = {elem.id}
